@@ -85,3 +85,25 @@ class CustomUser(AbstractBaseUser):
 
     def __str__(self):
         return f'{self.username} - {self.phone_number}'
+
+
+class OTP(models.Model):
+    class Meta:
+        db_table = 'otp'
+
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, null=False)
+    otp_code = models.IntegerField(null=False)
+    attempts = models.IntegerField(default=0, null=False)
+    creation_date = models.DateTimeField(default=timezone.now, null=False)
+
+    @staticmethod
+    def is_valid(user: CustomUser, otp: int) -> bool:
+        try:
+            OTP.objects.get(user=user, otp_code=otp).delete()
+            return True
+        except ObjectDoesNotExist:
+            return False
+
+    @staticmethod
+    def create_otp(user):
+        return OTP.objects.update_or_create(user=user, otp_code=randint(100000, 999999))
