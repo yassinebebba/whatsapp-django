@@ -117,3 +117,13 @@ class OTPValidationView(CreateAPIView):
                 status_code = status.HTTP_404_NOT_FOUND
 
         return Response(data=response, status=status_code)
+
+
+def index(request):
+    return render(request, 'main/index.html')
+
+
+def room(request, room_name):
+    return render(request, 'main/room.html', {
+        'room_name': room_name
+    })
